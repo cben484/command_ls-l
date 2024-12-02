@@ -1,4 +1,4 @@
-this is for ls -l
+this is for ls -l  
 no color  
 no order  
 no total
