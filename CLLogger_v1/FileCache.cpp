@@ -55,6 +55,16 @@ public:
   }
 
   void read(char *read_data) { memcpy(read_data, buffer, currentPos); }
+  void read(char *read_data, int len) {
+    if (file.is_open()) {
+      file.seekg(0, std::ios::beg);
+      file.read(read_data, len);
+    }
+
+    else {
+      std::cerr << "File is not open!" << std::endl;
+    }
+  }
 
   int write(const char *write_data) {
     if (currentPos + strlen(write_data) >= bufferSize) {
@@ -68,7 +78,50 @@ public:
     return EXIT_SUCCESS;
   }
 
-  void lseek() {}
+  int write(const std::string &write_data) {
+    if (currentPos + write_data.size() >= bufferSize) {
+      cerr << "The Buffer is overflowingggggggg" << endl;
+      return EXIT_FAILURE;
+    }
+    memcpy(buffer + currentPos, write_data.c_str(), write_data.size());
+    currentPos += write_data.size();
+    file << write_data;
+    isModified++;
+    return EXIT_SUCCESS;
+  }
+
+  void lseek(int offset, int whence) {
+    if (!file.is_open()) {
+      std::cerr << "File is not open!" << std::endl;
+      return;
+    }
+
+    switch (whence) {
+    case SEEK_SET:
+      currentPos = offset;
+      break;
+    case SEEK_CUR:
+      currentPos += offset;
+      break;
+    case SEEK_END:
+      currentPos = fileLength + offset;
+      break;
+    default:
+      std::cerr << "Invalid whence value!" << std::endl;
+      return;
+    }
+
+    if (currentPos < 0) {
+      std::cerr << "Invalid offset! Current position cannot be negative."
+                << std::endl;
+      // currentPos = 0;
+    }
+    if (currentPos > fileLength) {
+      std::cerr << "Invalid offset! Current position cannot exceed file length."
+                << std::endl;
+      // currentPos = fileLength;
+    }
+  }
 
   void close() {
     file.close();

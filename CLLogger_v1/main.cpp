@@ -1,52 +1,65 @@
 #include "FileCache.cpp"
-#include "Student.cpp"
 #include <iostream>
+#include <string>
 
 using namespace std;
 #define BUFFERSIZE 1024
 
-int main() {
+int main(int argc, char *argv[]) {
+
   FileCache filecache(BUFFERSIZE);
-  filecache.open("jiashe.txt");
-  filecache.write("xibaluoma");
-  filecache.write("axiba");
-  filecache.see_args();
   char *read = new char[BUFFERSIZE];
-  filecache.read(read);
-  cout << "what's read: " << read << endl;
+  string command;
+  string data;
+  int seek = -1;
+  int mode = -1;
+
+  // 此处不可重复打开，虽然不知道为什么，但是时间好像不允许去深究了
+  filecache.open("jiashe.txt");
+
+  while (true) {
+
+    std::cout << "Command: ";
+    std::cin >> command;
+
+    if (command == "-1") {
+      break;
+    }
+
+    if (command == "r") {
+      std::cout << "The file is: ";
+      filecache.read(read, 1024);
+      cout << read << endl;
+    }
+
+    if (command == "w") {
+      std::cout << "What's you want to write: ";
+      std::cin >> data;
+      filecache.write(data);
+    }
+
+    if (command == "lseek") {
+      std::cout << "Where do you want to go: ";
+      std::cin >> seek;
+      std::cout << "What's The Mode (1,2 or 3 ) : ";
+      std::cin >> mode;
+      filecache.lseek(seek, mode);
+      // std::cin.ignore();
+    }
+
+    cout << "what's the command: " << command << endl;
+    cout << "what's the data: " << data << endl;
+    cout << "what's the seek: " << seek << endl;
+    cout << "what's the mode: " << mode << endl;
+  }
+
+  // filecache.write("xibaluoma");
+  // filecache.write("axiba");
+  filecache.see_args();
 
   filecache.close();
 
   delete[] read;
-  const char *ar = "asdfasdf";
-  cout << ar << endl;
-
-  //   FileCache cache("students.txt", 1024);
-  //   cout << "the size of Student is: " << sizeof(Student) << endl;
-  //   // 写入学生信息
-  //   Student s1("Tom", "Male", 20);
-  //   cache.write(0, (char *)&s1, sizeof(Student));
-
-  //   Student s2("Lily", "Female", 18);
-  //   cache.write(100, (char *)&s2, sizeof(Student));
-
-  //   // 读取学生信息
-  //   Student s3;
-  //   cache.read(0, (char *)&s3, sizeof(Student));
-  //   cout << "Name: " << s3.name << ", Gender: " << s3.gender
-  //        << ", Age: " << s3.age << endl;
-
-  //   Student s4;
-  //   cache.read(100, (char *)&s4, sizeof(Student));
-  //   cout << "Name: " << s4.name << ", Gender: " << s4.gender
-  //        << ", Age: " << s4.age << endl;
-
-  // 插入学生信息
-  //   Student s5("John", "Male", 22);
-  //   cache.insert(200, (char *)&s5, sizeof(Student));
-
-  // 删除学生信息
-  //   cache.remove(0, sizeof(Student));
 
   return 0;
 }
